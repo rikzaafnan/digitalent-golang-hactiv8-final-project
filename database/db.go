@@ -20,35 +20,55 @@ var (
 )
 
 func createRequiredTables() {
-	// orderTable := `
-	// CREATE TABLE IF NOT EXISTS orders (
-	// 	id SERIAL PRIMARY KEY,
-	// 	customer_name varchar(255) NOT NULL,
-	// 	ordered_at timestamptz NOT NULL DEFAULT (now()),
-	// 	updated_at timestamptz NOT NULL DEFAULT (now())
-	// );`
+	UserTable := `
+	CREATE TABLE IF NOT EXISTS users (
+		id SERIAL PRIMARY KEY,
+		username varchar(255) NOT NULL UNIQUE,
+		email varchar(255) NOT NULL UNIQUE,
+		password varchar(255) NOT NULL,
+		age int NOT NULL,
+		profile_image_url varchar(255) NOT NULL,
+		created_at timestamptz NOT NULL DEFAULT (now()),
+		updated_at timestamptz  NULL DEFAULT NULL
+	);`
 
-	// itemTable := `
-	// CREATE TABLE IF NOT EXISTS items (
-	// 	id SERIAL PRIMARY KEY,
-	// 	item_code varchar(255) NOT NULL,
-	// 	description varchar(255) NOT NULL,
-	// 	quantity int NOT NULL,
-	// 	order_id int NOT NULL,
-	// 	created_at timestamptz NOT NULL DEFAULT (now()),
-	// 	updated_at timestamptz NULL DEFAULT NULL,
-	// 	CONSTRAINT item_order_id_fk
-	// 		FOREIGN KEY(order_id)
-	// 			REFERENCES orders(id)
-	// 				ON DELETE SET NULL
-	// );`
+	PhotoTable := `
+	CREATE TABLE IF NOT EXISTS photos (
+		id SERIAL PRIMARY KEY,
+		title varchar(255) NOT NULL ,
+		caption varchar(255) NOT NULL ,
+		photo_url varchar(255) NOT NULL,
+		user_id int NOT NULL,
+		created_at timestamptz NOT NULL DEFAULT (now()),
+		updated_at timestamptz  NULL DEFAULT NULL
+	);`
 
-	// createTableQueries := fmt.Sprintf("%s  %s", orderTable, itemTable)
-	// _, err = db.Exec(createTableQueries)
+	CommentTable := `
+	CREATE TABLE IF NOT EXISTS comments (
+		id SERIAL PRIMARY KEY,
+		user_id int NOT NULL,
+		photo_id int NOT NULL,
+		message varchar(255) NULL ,
+		created_at timestamptz NOT NULL DEFAULT (now()),
+		updated_at timestamptz  NULL DEFAULT NULL
+	);`
 
-	// if err != nil {
-	// 	log.Fatal("error while creating movies table =>", err.Error())
-	// }
+	SocialMediaTable := `
+	CREATE TABLE IF NOT EXISTS social_medias (
+		id SERIAL PRIMARY KEY,
+		name varchar(255) NOT NULL,
+		sical_media_url varchar(255) NOT NULL,
+		user_id int NOT NULL,
+		created_at timestamptz NOT NULL DEFAULT (now()),
+		updated_at timestamptz  NULL DEFAULT NULL
+	);`
+
+	createTableQueries := fmt.Sprintf("%s  %s %s %s", UserTable, PhotoTable, CommentTable, SocialMediaTable)
+	_, err = db.Exec(createTableQueries)
+
+	if err != nil {
+		log.Fatal("error while creating movies table =>", err.Error())
+	}
 }
 
 func InitializeDB() {
