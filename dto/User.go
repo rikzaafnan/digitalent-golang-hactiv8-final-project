@@ -11,8 +11,8 @@ type UserRegister struct {
 }
 
 type UserResponse struct {
-	ID    int    `json:"id"`
-	Age   int    `json:"age"`
+	ID    int64  `json:"id"`
+	Age   int64  `json:"age"`
 	Email string `json:"email"`
 	// Password string `json:"password"`
 	Username string `json:"username"`

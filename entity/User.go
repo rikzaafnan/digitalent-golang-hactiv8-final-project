@@ -7,7 +7,7 @@ type User struct {
 	Username        string    `db:"username"`
 	Email           string    `db:"email"`
 	Password        string    `db:"password"`
-	Age             string    `db:"age"`
+	Age             int64     `db:"age"`
 	ProfileImageUrl string    `db:"profile_image_url"`
 	CereatedAt      null.Time `db:"created_at"`
 	UpdatedAt       null.Time `db:"updated_at"`
