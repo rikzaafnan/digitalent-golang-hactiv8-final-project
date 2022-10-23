@@ -3,10 +3,10 @@ package dto
 import "gopkg.in/guregu/null.v4"
 
 type UserRegister struct {
-	Age             int    `json:"age"`
-	Email           string `json:"email"`
-	Password        string `json:"password"`
-	Username        string `json:"username"`
+	Age             int    `json:"age" `
+	Email           string `json:"email" valid:"required~email cannot be empty"`
+	Password        string `json:"password" valid:"required~password cannot be empty"`
+	Username        string `json:"username" valid:"required~username cannot be empty"`
 	ProfileImageUrl string `json:"profileImageUrl"`
 }
 
@@ -19,8 +19,8 @@ type UserResponse struct {
 }
 
 type UserLogin struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Email    string `json:"email" valid:"required~email cannot be empty"`
+	Password string `json:"password" valid:"required~password cannot be empty"`
 }
 
 type UserLoginResponse struct {
@@ -28,8 +28,8 @@ type UserLoginResponse struct {
 }
 
 type UserUpdate struct {
-	Email    string `json:"email"`
-	Username string `json:"username"`
+	Email    string `json:"email" valid:"required~email cannot be empty"`
+	Username string `json:"username" valid:"required~username cannot be empty"`
 }
 
 type UserUpdateResponse struct {

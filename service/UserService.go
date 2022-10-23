@@ -13,6 +13,7 @@ type UserService interface {
 	Login(req *dto.UserLogin) (dto.UserLoginResponse, error)
 	Update(userID int64, req dto.UserUpdate) (dto.UserUpdateResponse, error)
 	Delete(userID int64) error
+	Me(email string) (dto.UserLoginResponse, error)
 }
 
 type userService struct {
@@ -40,9 +41,12 @@ func (s *userService) Register(req *dto.UserRegister) (dto.UserResponse, error) 
 
 	// check email
 	_, err = s.userRepository.FindByEmail(req.Email)
+	if err == nil {
 
-	// hash pasword
-	hasPassword := req.Password
+		log.Println("email telah digunakan")
+		return user, errors.New("email telah digunakan")
+
+	}
 
 	// age minimal 8
 	if req.Age < 9 {
@@ -51,7 +55,14 @@ func (s *userService) Register(req *dto.UserRegister) (dto.UserResponse, error) 
 	}
 
 	var entityUser entity.User
-	entityUser.Password = hasPassword
+	// hash pasword
+	entityUser.Password = req.Password
+	err = entityUser.HashPass()
+	if err != nil {
+		log.Println(err)
+		return user, err
+	}
+
 	_, lastInserID, err := s.userRepository.Insert(entityUser)
 	if err != nil {
 
@@ -89,7 +100,7 @@ func (s *userService) Login(req *dto.UserLogin) (dto.UserLoginResponse, error) {
 
 	}
 	// comparea password
-	userEntity.Password = userEntity.Password
+	userEntity.ComparePassword(req.Password)
 
 	// generate token
 	token := "123213123123213213123123"
@@ -172,5 +183,26 @@ func (s *userService) Delete(userID int64) error {
 	}
 
 	return nil
+
+}
+func (s *userService) Me(email string) (dto.UserResponse, error) {
+
+	var user dto.UserResponse
+
+	// check email
+	userEntity, err := s.userRepository.FindByEmail(email)
+	if err != nil {
+
+		log.Println(err)
+		return user, errors.New("user not found")
+
+	}
+
+	user.ID = userEntity.ID
+	user.Username = userEntity.Username
+	user.Age = userEntity.Age
+	user.Email = userEntity.Email
+
+	return user, nil
 
 }

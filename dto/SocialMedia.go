@@ -3,8 +3,8 @@ package dto
 import "gopkg.in/guregu/null.v4"
 
 type SocialMediaRequest struct {
-	Name           string `json:"name"`
-	SocialMediaUrl int64  `json:"socialMediaUrl"`
+	Name           string `json:"name" valid:"required~name cannot be empty"`
+	SocialMediaUrl int64  `json:"socialMediaUrl" valid:"required~socialMediaUrl cannot be empty"`
 }
 
 type SocialMediaResponse struct {
@@ -22,8 +22,8 @@ type SocialMediaUser struct {
 }
 
 type SocialMediaUpdateRequest struct {
-	Name           string `json:"name"`
-	SocialMediaUrl int64  `json:"socialMediaUrl"`
+	Name           string `json:"name" valid:"required~name cannot be empty"`
+	SocialMediaUrl int64  `json:"socialMediaUrl" valid:"required~socialMediaUrl cannot be empty"`
 }
 
 type SocialMediaUpdateResponse struct {

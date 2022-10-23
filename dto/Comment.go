@@ -3,8 +3,8 @@ package dto
 import "gopkg.in/guregu/null.v4"
 
 type CommentRequest struct {
-	Message string `json:"message"`
-	PhotoID int64  `json:"photoId"`
+	Message string `json:"message" valid:"required~message cannot be empty"`
+	PhotoID int64  `json:"photoId" valid:"required~photoId cannot be empty"`
 }
 
 type CommentResponse struct {
@@ -37,7 +37,7 @@ type CommentUserPhotoResponse struct {
 }
 
 type CommentUpdateRequest struct {
-	Message string `json:"message"`
+	Message string `json:"message" valid:"required~message cannot be empty"`
 }
 
 type CommentUpdateResponse struct {
