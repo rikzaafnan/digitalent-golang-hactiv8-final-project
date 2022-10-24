@@ -9,13 +9,6 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-// username varchar(255) NOT NULL UNIQUE,
-// 		email varchar(255) NOT NULL UNIQUE,
-// 		password varchar(255) NOT NULL,
-// 		age int NOT NULL,
-// 		profile_image_url varchar(255) NOT NULL,
-// 		created_at timestamptz NOT NULL DEFAULT (now()),
-
 const (
 	sqlInsertUser = `INSERT INTO users
 					(
@@ -23,7 +16,7 @@ const (
 					)
 					VALUES ($1, $2, $3, $4,$5,%6)
 					`
-	sqlUser       = `SELECT username, email, password, age, profile_image_url, created_at, updated_at FROM users`
+	sqlUser       = `SELECT id, username, email, password, age, profile_image_url, created_at, updated_at FROM users`
 	SqlDeleteUser = `DELETE users where id= $1`
 )
 
