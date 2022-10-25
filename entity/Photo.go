@@ -13,6 +13,8 @@ type Photo struct {
 	PhotoUrl      string `db:"photo_url"`
 	UserID        int64  `db:"user_id"`
 	dto.PhotoUser `db:"user_id"`
-	CereatedAt    null.Time `db:"created_at"`
-	UpdatedAt     null.Time `db:"updated_at"`
+	CereatedAt    null.Time   `db:"created_at"`
+	UpdatedAt     null.Time   `db:"updated_at"`
+	UserEmail     null.String `db:"user_email"`
+	USerUsername  null.String `db:"user_username"`
 }
