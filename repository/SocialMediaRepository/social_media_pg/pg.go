@@ -67,7 +67,7 @@ func (r *socialMediaPG) FindOneByID(socialMediaID int64) (entity.SocialMedia, er
 }
 func (r *socialMediaPG) Insert(req entity.SocialMedia) (int64, int64, error) {
 
-	result, err := r.db.Exec(sqlInsertSocialMedia, req.Name, req.SocialMedia, req.UserID, time.Now())
+	result, err := r.db.Exec(sqlInsertSocialMedia, req.Name, req.SocialMediaURl, req.UserID, time.Now())
 	if err != nil {
 		log.Println(err)
 		return 0, 0, err
@@ -80,7 +80,7 @@ func (r *socialMediaPG) Insert(req entity.SocialMedia) (int64, int64, error) {
 }
 func (r *socialMediaPG) Update(socialMediaID int64, req entity.SocialMedia) (int64, int64, error) {
 
-	result, err := r.db.Exec("UPDATE social_medias SET name = $2,social_media_url= $3, updated_at = $4 where id = &1 ", socialMediaID, req.Name, req.SocialMedia, time.Now())
+	result, err := r.db.Exec("UPDATE social_medias SET name = $2,social_media_url= $3, updated_at = $4 where id = &1 ", socialMediaID, req.Name, req.SocialMediaURl, time.Now())
 	if err != nil {
 		log.Println(err)
 		return 0, 0, err

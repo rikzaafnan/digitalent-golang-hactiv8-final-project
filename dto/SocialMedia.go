@@ -21,6 +21,16 @@ type SocialMediaUser struct {
 	ProfileImageUrl string `json:"profileImageUrl"`
 }
 
+type SocialMediaAggregateResponse struct {
+	ID             int64     `json:"id"`
+	Name           string    `json:"name"`
+	SocialMediaUrl string    `json:"socialMediaUrl"`
+	UserID         int64     `json:"userId"`
+	CreatedAt      null.Time `json:"createdAt"`
+	UpdatedAt      null.Time `json:"updatedAt"`
+	SocialMediaUser
+}
+
 type SocialMediaUpdateRequest struct {
 	Name           string `json:"name" valid:"required~name cannot be empty"`
 	SocialMediaUrl string `json:"socialMediaUrl" valid:"required~socialMediaUrl cannot be empty"`

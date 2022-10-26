@@ -14,7 +14,7 @@ type SocialMediaService interface {
 	Update(socialMediaID int64, req *dto.SocialMediaUpdateRequest) (dto.SocialMediaUpdateResponse, error)
 	Delete(socialMediaID int64) error
 	FindOneByID(socialMediaID int64) (dto.SocialMediaResponse, error)
-	FindAll() ([]dto.SocialMediaResponse, error)
+	FindAll() ([]dto.SocialMediaAggregateResponse, error)
 }
 
 type socialMediaService struct {
@@ -29,24 +29,29 @@ func NewSocialMediaService(socialMediaRepository socialmediarepository.SocialMed
 
 func (s *socialMediaService) Create(req *dto.SocialMediaRequest) (dto.SocialMediaResponse, error) {
 
-	var socialMedia dto.SocialMediaResponse
+	var socialMediaResponse dto.SocialMediaResponse
 
 	var entitySocialMedia entity.SocialMedia
 	entitySocialMedia.Name = req.Name
-	entitySocialMedia.SocialMedia.SetValid(req.SocialMediaUrl)
+	entitySocialMedia.SocialMediaURl.SetValid(req.SocialMediaUrl)
 	_, lastInsertId, err := s.socialMediaRepository.Insert(entitySocialMedia)
 	if err != nil {
 		log.Println(err)
-		return socialMedia, err
+		return socialMediaResponse, err
 	}
 
-	socialMedia, err = s.FindOneByID(lastInsertId)
+	socialMedia, err := s.socialMediaRepository.FindOneByID(lastInsertId)
 	if err != nil {
 		log.Println(err)
-		return socialMedia, err
+		return socialMediaResponse, err
 	}
+	socialMediaResponse.ID = socialMedia.ID
+	socialMediaResponse.Name = socialMedia.Name
+	socialMediaResponse.SocialMediaUrl = socialMedia.SocialMediaURl.String
+	socialMediaResponse.UserID = socialMedia.UserID
+	socialMediaResponse.CreatedAt.SetValid(socialMedia.CereatedAt.Time)
 
-	return socialMedia, nil
+	return socialMediaResponse, nil
 }
 
 func (s *socialMediaService) Update(socialMediaID int64, req *dto.SocialMediaUpdateRequest) (dto.SocialMediaUpdateResponse, error) {
@@ -61,7 +66,7 @@ func (s *socialMediaService) Update(socialMediaID int64, req *dto.SocialMediaUpd
 
 	var entitySocialMedia entity.SocialMedia
 	entitySocialMedia.Name = req.Name
-	entitySocialMedia.SocialMedia.SetValid(req.SocialMediaUrl)
+	entitySocialMedia.SocialMediaURl.SetValid(req.SocialMediaUrl)
 
 	_, _, err = s.socialMediaRepository.Update(socialMediaID, entitySocialMedia)
 	if err != nil {
@@ -106,16 +111,16 @@ func (s *socialMediaService) FindOneByID(socialMediaID int64) (dto.SocialMediaRe
 
 	socialMediaResponse.ID = socialMedia.ID
 	socialMediaResponse.Name = socialMedia.Name
-	socialMediaResponse.SocialMediaUrl = socialMedia.SocialMedia.String
+	socialMediaResponse.SocialMediaUrl = socialMedia.SocialMediaURl.String
 	socialMediaResponse.UserID = socialMedia.UserID
 	socialMediaResponse.CreatedAt.SetValid(socialMedia.CereatedAt.Time)
 
 	return socialMediaResponse, nil
 }
 
-func (s *socialMediaService) FindAll() ([]dto.SocialMediaResponse, error) {
+func (s *socialMediaService) FindAll() ([]dto.SocialMediaAggregateResponse, error) {
 
-	var socialMediaResponses []dto.SocialMediaResponse
+	var socialMediaResponses []dto.SocialMediaAggregateResponse
 
 	socialMedias, err := s.socialMediaRepository.FindAll()
 	if err != nil {
@@ -123,13 +128,22 @@ func (s *socialMediaService) FindAll() ([]dto.SocialMediaResponse, error) {
 		return socialMediaResponses, err
 	}
 	for _, socialMedia := range socialMedias {
-		var socialMediaResponse dto.SocialMediaResponse
+
+		socialMediaUser := dto.SocialMediaUser{
+			ID:              socialMedia.UserID,
+			Username:        socialMedia.Username,
+			ProfileImageUrl: socialMedia.ProfileImageUrl,
+		}
+
+		var socialMediaResponse dto.SocialMediaAggregateResponse
 
 		socialMediaResponse.ID = socialMedia.ID
 		socialMediaResponse.Name = socialMedia.Name
-		socialMediaResponse.SocialMediaUrl = socialMedia.SocialMedia.String
+		socialMediaResponse.SocialMediaUrl = socialMedia.SocialMediaURl.String
 		socialMediaResponse.UserID = socialMedia.UserID
 		socialMediaResponse.CreatedAt.SetValid(socialMedia.CereatedAt.Time)
+		socialMediaResponse.UpdatedAt.SetValid(socialMedia.UpdatedAt.Time)
+		socialMediaResponse.SocialMediaUser = socialMediaUser
 
 		socialMediaResponses = append(socialMediaResponses, socialMediaResponse)
 	}

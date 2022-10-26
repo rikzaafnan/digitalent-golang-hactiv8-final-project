@@ -13,7 +13,7 @@ type UserService interface {
 	Login(req *dto.UserLogin) (dto.UserLoginResponse, error)
 	Update(userID int64, req dto.UserUpdate) (dto.UserUpdateResponse, error)
 	Delete(userID int64) error
-	Me(email string) (dto.UserLoginResponse, error)
+	Me(email string) (dto.UserResponse, error)
 }
 
 type userService struct {

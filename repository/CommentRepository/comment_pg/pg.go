@@ -13,7 +13,7 @@ type commentPG struct {
 	db *sqlx.DB
 }
 
-func NewPhotoPG(db *sqlx.DB) commentrepository.CommentRepository {
+func NewCommentPG(db *sqlx.DB) commentrepository.CommentRepository {
 	return &commentPG{
 		db: db,
 	}
@@ -26,10 +26,9 @@ const (
 					)
 					VALUES ($1, $2, $3, $4)
 					`
-	sqlComment = `SELECT c.id, c.message, c.photo_id, c.user_id, c.created_at, c.updated_at
-
-					user.id as id_user,	user.email as user_email, user.username as user_username,
-					p.id as id_photo, p.title as photo_title, p.caption, p.photo_url
+	sqlComment = `SELECT c.id, c.message, c.photo_id, c.user_id, c.created_at, c.updated_at,
+					user.email, user.username,
+					p.title, p.caption, p.photo_url
 					FROM comments as p
 					left JOIN users as user on user.id = c.user_id
 					left JOIN photos as p on p.id = c.photo_id

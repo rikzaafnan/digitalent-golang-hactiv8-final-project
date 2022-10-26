@@ -13,7 +13,7 @@ type PhotoService interface {
 	Update(photoID int64, req *dto.PhotoUpdateRequest) (dto.PhotoUpdateResponse, error)
 	Delete(photoID int64) error
 	FindOneByID(photoID int64) (dto.PhotoResponse, error)
-	FindAll() ([]dto.PhotoResponse, error)
+	FindAll() ([]dto.PhotoUserResponse, error)
 }
 
 type photoService struct {
