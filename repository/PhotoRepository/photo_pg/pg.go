@@ -1,6 +1,7 @@
 package photopg
 
 import (
+	"fmt"
 	"log"
 	"mygram/entity"
 	photorepository "mygram/repository/PhotoRepository"
@@ -24,14 +25,14 @@ const (
 					(
 						title, caption, photo_url, user_id, created_at
 					)
-					VALUES ($1, $2, $3, $4,$5)
+					VALUES ($1, $2, $3, $4,$5) RETURNING id;
 					`
 	sqlPhoto = `SELECT p.id, p.title, p.caption, p.photo_url, p.user_id, p.created_at, p.updated_at
 					 	user.email as user_email, user.username as user_username
 					FROM photos as p
 					left JOIN users as user on user.id = p.user_id`
 
-	SqlDeletePhoto = `DELETE photos where id= $1`
+	SqlDeletePhoto = `DELETE FROM photos where id= $1`
 )
 
 func (r *photoPG) FindAll() ([]entity.Photo, error) {
@@ -59,16 +60,16 @@ func (r *photoPG) FindOneByID(photoID int64) (entity.Photo, error) {
 }
 func (r *photoPG) Insert(req entity.Photo) (int64, int64, error) {
 
-	result, err := r.db.Exec(sqlInsertPhoto, req.Title, req.Caption, req.PhotoUrl, req.UserID, time.Now())
+	var id int
+	err := r.db.QueryRowx(sqlInsertPhoto, req.Title, req.Caption, req.PhotoUrl, req.UserID, time.Now()).Scan(&id)
 	if err != nil {
 		log.Println(err)
+		fmt.Println("err  kesini ?")
 		return 0, 0, err
 	}
 
-	rowsAffected, _ := result.RowsAffected()
-	lastInserId, _ := result.LastInsertId()
+	return 0, int64(id), nil
 
-	return rowsAffected, lastInserId, nil
 }
 func (r *photoPG) Update(photoID int64, req entity.Photo) (int64, int64, error) {
 

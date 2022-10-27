@@ -9,7 +9,7 @@ import (
 )
 
 type PhotoService interface {
-	Create(req *dto.PhotoRequest) (dto.PhotoResponse, error)
+	Create(req *dto.PhotoRequest, userID int64) (dto.PhotoResponse, error)
 	Update(photoID int64, req *dto.PhotoUpdateRequest) (dto.PhotoUpdateResponse, error)
 	Delete(photoID int64) error
 	FindOneByID(photoID int64) (dto.PhotoResponse, error)
@@ -26,7 +26,7 @@ func NewPhotoService(photoRepository photorepository.PhotoRepository) *photoServ
 	}
 }
 
-func (s *photoService) Create(req *dto.PhotoRequest) (dto.PhotoResponse, error) {
+func (s *photoService) Create(req *dto.PhotoRequest, userID int64) (dto.PhotoResponse, error) {
 
 	var photoResponse dto.PhotoResponse
 
@@ -34,6 +34,7 @@ func (s *photoService) Create(req *dto.PhotoRequest) (dto.PhotoResponse, error) 
 	entityPhoto.Title = req.Title
 	entityPhoto.Caption = req.Caption
 	entityPhoto.PhotoUrl = req.PhotoUrl
+	entityPhoto.UserID = userID
 
 	_, lastInsertId, err := s.photoRepository.Insert(entityPhoto)
 	if err != nil {

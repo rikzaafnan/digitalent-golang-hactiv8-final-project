@@ -44,6 +44,7 @@ func userRoute(route *gin.Engine, db *sqlx.DB) {
 	userRepository := userpg.NewUserPG(db)
 	userService := service.NewUserService(userRepository)
 	userHandler := NewUserhandler(userService)
+	authService := service.NewAuthService(userRepository)
 
 	// no jwt
 	routeGroup := route.Group("/users")
@@ -52,6 +53,7 @@ func userRoute(route *gin.Engine, db *sqlx.DB) {
 	routeGroup.POST("/login", userHandler.Login)
 
 	routerGroupWithJWT := route.Group("/users")
+	routerGroupWithJWT.Use(authService.Authentication())
 	routerGroupWithJWT.PUT("/:userID", userHandler.Update)
 	routerGroupWithJWT.DELETE("/:userID", userHandler.Delete)
 	routerGroupWithJWT.GET("/me", userHandler.Me)
@@ -62,11 +64,14 @@ func photoRoute(route *gin.Engine, db *sqlx.DB) {
 	photoRepository := photopg.NewPhotoPG(db)
 	photoService := service.NewPhotoService(photoRepository)
 	photoHandler := NewPhotohandler(photoService)
+	userRepository := userpg.NewUserPG(db)
+	authService := service.NewAuthService(userRepository)
 
 	routeGroup := route.Group("/photos")
 
-	routeGroup.POST("/", photoHandler.FindAll)
-	routeGroup.GET("/", photoHandler.FindOneByID)
+	routeGroup.Use(authService.Authentication())
+	routeGroup.POST("/", photoHandler.Create)
+	routeGroup.GET("/", photoHandler.FindAll)
 	routeGroup.PUT("/:photoID", photoHandler.Update)
 	routeGroup.DELETE("/:photoID", photoHandler.Delete)
 

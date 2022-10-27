@@ -1,6 +1,7 @@
 package commentpg
 
 import (
+	"fmt"
 	"log"
 	"mygram/entity"
 	commentrepository "mygram/repository/CommentRepository"
@@ -24,7 +25,7 @@ const (
 					(
 						message, photo_id, user_id, created_at
 					)
-					VALUES ($1, $2, $3, $4)
+					VALUES ($1, $2, $3, $4) RETURNING id;
 					`
 	sqlComment = `SELECT c.id, c.message, c.photo_id, c.user_id, c.created_at, c.updated_at,
 					user.email, user.username,
@@ -34,7 +35,7 @@ const (
 					left JOIN photos as p on p.id = c.photo_id
 					`
 
-	SqlDeleteComment = `DELETE comments where id= $1`
+	SqlDeleteComment = `DELETE FROM comments where id= $1`
 )
 
 func (r *commentPG) FindAll() ([]entity.Comment, error) {
@@ -62,16 +63,15 @@ func (r *commentPG) FindOneByID(commentID int64) (entity.Comment, error) {
 }
 func (r *commentPG) Insert(req entity.Comment) (int64, int64, error) {
 
-	result, err := r.db.Exec(sqlInsertComment, req.Message, req.PhotoID, req.UserID, time.Now())
+	var id int
+	err := r.db.QueryRowx(sqlInsertComment, req.Message, req.PhotoID, req.UserID, time.Now()).Scan(&id)
 	if err != nil {
 		log.Println(err)
+		fmt.Println("err  kesini ?")
 		return 0, 0, err
 	}
 
-	rowsAffected, _ := result.RowsAffected()
-	lastInserId, _ := result.LastInsertId()
-
-	return rowsAffected, lastInserId, nil
+	return 0, int64(id), nil
 }
 func (r *commentPG) Update(commentID int64, req entity.Comment) (int64, int64, error) {
 

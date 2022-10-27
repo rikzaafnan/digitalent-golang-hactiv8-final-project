@@ -34,7 +34,7 @@ func (u userRestHandler) Register(c *gin.Context) {
 	user, err := u.userService.Register(&req)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"msg": "invalid JSON request",
+			"msg": err.Error(),
 			"err": "BAD_REQUEST",
 		})
 		return
@@ -59,7 +59,7 @@ func (u userRestHandler) Login(c *gin.Context) {
 	token, err := u.userService.Login(&req)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"msg": "invalid JSON request",
+			"msg": err.Error(),
 			"err": "BAD_REQUEST",
 		})
 		return

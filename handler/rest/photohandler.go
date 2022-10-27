@@ -31,7 +31,7 @@ func (u photoRestHandler) Create(c *gin.Context) {
 		return
 	}
 
-	user, err := u.photoService.Create(&req)
+	user, err := u.photoService.Create(&req, 1)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]interface{}{
 			"msg": "invalid JSON request",

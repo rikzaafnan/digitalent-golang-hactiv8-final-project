@@ -1,5 +1,7 @@
 package main
 
-func main() {
+import "mygram/handler/rest"
 
+func main() {
+	rest.StartApp()
 }

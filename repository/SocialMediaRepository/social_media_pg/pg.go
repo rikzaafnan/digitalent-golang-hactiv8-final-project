@@ -1,6 +1,7 @@
 package socialmediapg
 
 import (
+	"fmt"
 	"log"
 	"mygram/entity"
 	socialmediarepository "mygram/repository/SocialMediaRepository"
@@ -39,7 +40,7 @@ const (
 					left JOIN users as user on user.id = c.user_id
 					`
 
-	SqlDeleteSocialMedia = `DELETE social_medias where id= $1`
+	SqlDeleteSocialMedia = `DELETE FROM social_medias where id= $1`
 )
 
 func (r *socialMediaPG) FindAll() ([]entity.SocialMedia, error) {
@@ -67,16 +68,26 @@ func (r *socialMediaPG) FindOneByID(socialMediaID int64) (entity.SocialMedia, er
 }
 func (r *socialMediaPG) Insert(req entity.SocialMedia) (int64, int64, error) {
 
-	result, err := r.db.Exec(sqlInsertSocialMedia, req.Name, req.SocialMediaURl, req.UserID, time.Now())
+	// result, err := r.db.Exec(sqlInsertSocialMedia, req.Name, req.SocialMediaURl, req.UserID, time.Now())
+	// if err != nil {
+	// 	log.Println(err)
+	// 	return 0, 0, err
+	// }
+
+	// rowsAffected, _ := result.RowsAffected()
+	// lastInserId, _ := result.LastInsertId()
+
+	// return rowsAffected, lastInserId, nil
+
+	var id int
+	err := r.db.QueryRowx(sqlInsertSocialMedia, req.Name, req.SocialMediaURl, req.UserID, time.Now()).Scan(&id)
 	if err != nil {
 		log.Println(err)
+		fmt.Println("err  kesini ?")
 		return 0, 0, err
 	}
 
-	rowsAffected, _ := result.RowsAffected()
-	lastInserId, _ := result.LastInsertId()
-
-	return rowsAffected, lastInserId, nil
+	return 0, int64(id), nil
 }
 func (r *socialMediaPG) Update(socialMediaID int64, req entity.SocialMedia) (int64, int64, error) {
 

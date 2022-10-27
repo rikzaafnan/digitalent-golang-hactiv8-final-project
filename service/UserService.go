@@ -34,7 +34,6 @@ func (s *userService) Register(req *dto.UserRegister) (dto.UserResponse, error) 
 	_, err := s.userRepository.FindByUsername(req.Username)
 	if err == nil {
 
-		log.Println("username telah digunakan")
 		return user, errors.New("username telah digunakan")
 
 	}
@@ -57,6 +56,10 @@ func (s *userService) Register(req *dto.UserRegister) (dto.UserResponse, error) 
 	var entityUser entity.User
 	// hash pasword
 	entityUser.Password = req.Password
+	entityUser.Age = int64(req.Age)
+	entityUser.Email = req.Email
+	entityUser.Username = req.Username
+	entityUser.ProfileImageUrl = req.ProfileImageUrl
 	err = entityUser.HashPass()
 	if err != nil {
 		log.Println(err)
@@ -100,10 +103,13 @@ func (s *userService) Login(req *dto.UserLogin) (dto.UserLoginResponse, error) {
 
 	}
 	// comparea password
-	userEntity.ComparePassword(req.Password)
+	result := userEntity.ComparePassword(req.Password)
+	if !result {
+		return userLogin, errors.New("password not found")
+	}
 
 	// generate token
-	token := "123213123123213213123123"
+	token := userEntity.GenerateToken()
 
 	userLogin.Token = token
 
