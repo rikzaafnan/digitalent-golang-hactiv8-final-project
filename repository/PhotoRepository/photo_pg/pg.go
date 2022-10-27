@@ -27,10 +27,9 @@ const (
 					)
 					VALUES ($1, $2, $3, $4,$5) RETURNING id;
 					`
-	sqlPhoto = `SELECT p.id, p.title, p.caption, p.photo_url, p.user_id, p.created_at, p.updated_at
-					 	user.email as user_email, user.username as user_username
-					FROM photos as p
-					left JOIN users as user on user.id = p.user_id`
+	sqlPhoto = `SELECT p.id, p.title, p.caption, p.photo_url, p.user_id, p.created_at, p.updated_at, u.email as user_email, u.username as user_username
+	FROM photos as p
+	left JOIN users as u on u.id = p.user_id`
 
 	SqlDeletePhoto = `DELETE FROM photos where id= $1`
 )
@@ -38,7 +37,7 @@ const (
 func (r *photoPG) FindAll() ([]entity.Photo, error) {
 	var photos []entity.Photo
 
-	err := r.db.Select(photos, sqlPhoto)
+	err := r.db.Select(&photos, sqlPhoto)
 	if err != nil {
 		log.Println(err)
 		return nil, err
@@ -50,8 +49,9 @@ func (r *photoPG) FindAll() ([]entity.Photo, error) {
 func (r *photoPG) FindOneByID(photoID int64) (entity.Photo, error) {
 	var photo entity.Photo
 
-	err := r.db.Select(photo, sqlPhoto+"where p.id=$1", photoID)
+	err := r.db.Get(&photo, sqlPhoto+" where p.id = $1", photoID)
 	if err != nil {
+		log.Println(photo, sqlPhoto+" where p.id = $1", photoID)
 		log.Println(err)
 		return photo, err
 	}
@@ -73,7 +73,7 @@ func (r *photoPG) Insert(req entity.Photo) (int64, int64, error) {
 }
 func (r *photoPG) Update(photoID int64, req entity.Photo) (int64, int64, error) {
 
-	result, err := r.db.Exec("UPDATE photos SET title = $2, caption= $3,photo_url= $3, updated_at = $4 where id = &1 ", photoID, req.Title, req.Caption, req.PhotoUrl, time.Now())
+	result, err := r.db.Exec("UPDATE photos SET title = $2, caption= $3,photo_url= $4, updated_at = $5 where id = $1 ", photoID, req.Title, req.Caption, req.PhotoUrl, time.Now())
 	if err != nil {
 		log.Println(err)
 		return 0, 0, err

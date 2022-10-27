@@ -10,8 +10,8 @@ import (
 )
 
 type SocialMediaService interface {
-	Create(req *dto.SocialMediaRequest) (dto.SocialMediaResponse, error)
-	Update(socialMediaID int64, req *dto.SocialMediaUpdateRequest) (dto.SocialMediaUpdateResponse, error)
+	Create(req *dto.SocialMediaRequest, userID int64) (dto.SocialMediaResponse, error)
+	Update(socialMediaID int64, req *dto.SocialMediaUpdateRequest, userID int64) (dto.SocialMediaUpdateResponse, error)
 	Delete(socialMediaID int64) error
 	FindOneByID(socialMediaID int64) (dto.SocialMediaResponse, error)
 	FindAll() ([]dto.SocialMediaAggregateResponse, error)
@@ -27,12 +27,13 @@ func NewSocialMediaService(socialMediaRepository socialmediarepository.SocialMed
 	}
 }
 
-func (s *socialMediaService) Create(req *dto.SocialMediaRequest) (dto.SocialMediaResponse, error) {
+func (s *socialMediaService) Create(req *dto.SocialMediaRequest, userID int64) (dto.SocialMediaResponse, error) {
 
 	var socialMediaResponse dto.SocialMediaResponse
 
 	var entitySocialMedia entity.SocialMedia
 	entitySocialMedia.Name = req.Name
+	entitySocialMedia.UserID = userID
 	entitySocialMedia.SocialMediaURl.SetValid(req.SocialMediaUrl)
 	_, lastInsertId, err := s.socialMediaRepository.Insert(entitySocialMedia)
 	if err != nil {
@@ -54,7 +55,7 @@ func (s *socialMediaService) Create(req *dto.SocialMediaRequest) (dto.SocialMedi
 	return socialMediaResponse, nil
 }
 
-func (s *socialMediaService) Update(socialMediaID int64, req *dto.SocialMediaUpdateRequest) (dto.SocialMediaUpdateResponse, error) {
+func (s *socialMediaService) Update(socialMediaID int64, req *dto.SocialMediaUpdateRequest, userID int64) (dto.SocialMediaUpdateResponse, error) {
 
 	var socialMediaUpdate dto.SocialMediaUpdateResponse
 
@@ -66,6 +67,7 @@ func (s *socialMediaService) Update(socialMediaID int64, req *dto.SocialMediaUpd
 
 	var entitySocialMedia entity.SocialMedia
 	entitySocialMedia.Name = req.Name
+	entitySocialMedia.UserID = userID
 	entitySocialMedia.SocialMediaURl.SetValid(req.SocialMediaUrl)
 
 	_, _, err = s.socialMediaRepository.Update(socialMediaID, entitySocialMedia)

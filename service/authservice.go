@@ -1,6 +1,7 @@
 package service
 
 import (
+	"log"
 	"mygram/entity"
 	userrepository "mygram/repository/UserRepository"
 	"net/http"
@@ -30,7 +31,6 @@ func (a *authService) Authentication() gin.HandlerFunc {
 		tokenStr := ctx.Request.Header.Get("Authorization")
 
 		err := user.VerifyToken(tokenStr)
-
 		if err != nil {
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 				"err_message": err.Error(),
@@ -47,7 +47,8 @@ func (a *authService) Authentication() gin.HandlerFunc {
 			return
 		}
 
-		ctx.Set("email", &user.Email)
+		ctx.Set("userID", user.ID)
 		ctx.Next()
+		log.Println("lewatni middleware")
 	})
 }

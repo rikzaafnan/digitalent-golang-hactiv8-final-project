@@ -31,10 +31,12 @@ func (u photoRestHandler) Create(c *gin.Context) {
 		return
 	}
 
-	user, err := u.photoService.Create(&req, 1)
+	userID := c.MustGet("userID")
+
+	user, err := u.photoService.Create(&req, userID.(int64))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"msg": "invalid JSON request",
+			"msg": err.Error(),
 			"err": "BAD_REQUEST",
 		})
 		return
@@ -65,7 +67,9 @@ func (u photoRestHandler) Update(c *gin.Context) {
 		return
 	}
 
-	photo, err := u.photoService.Update(int64(photoId), &req)
+	userID := c.MustGet("userID")
+
+	photo, err := u.photoService.Update(int64(photoId), &req, userID.(int64))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]interface{}{
 			"msg": "invalid JSON request",
@@ -134,6 +138,13 @@ func (u photoRestHandler) FindAll(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, map[string]interface{}{
 			"msg": err.Error(),
 			"err": "BAD_REQUEST",
+		})
+		return
+	}
+
+	if len(photos) <= 0 {
+		c.JSON(http.StatusOK, map[string]interface{}{
+			"data": "tidak ada data",
 		})
 		return
 	}

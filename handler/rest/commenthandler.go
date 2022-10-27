@@ -31,7 +31,8 @@ func (u commentRestHandler) Create(c *gin.Context) {
 		return
 	}
 
-	user, err := u.commentService.Create(&req)
+	userID := c.MustGet("userID")
+	user, err := u.commentService.Create(&req, userID.(int64))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]interface{}{
 			"msg": "invalid JSON request",
@@ -65,7 +66,9 @@ func (u commentRestHandler) Update(c *gin.Context) {
 		return
 	}
 
-	comment, err := u.commentService.Update(int64(commentId), &req)
+	userID := c.MustGet("userID")
+
+	comment, err := u.commentService.Update(int64(commentId), &req, userID.(int64))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]interface{}{
 			"msg": "invalid JSON request",
@@ -134,6 +137,12 @@ func (u commentRestHandler) FindAll(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, map[string]interface{}{
 			"msg": err.Error(),
 			"err": "BAD_REQUEST",
+		})
+		return
+	}
+	if len(comments) <= 0 {
+		c.JSON(http.StatusOK, map[string]interface{}{
+			"data": "tidak ada data",
 		})
 		return
 	}

@@ -73,9 +73,9 @@ func (u userRestHandler) Login(c *gin.Context) {
 
 func (u userRestHandler) Me(c *gin.Context) {
 
-	email := c.MustGet("email")
+	userID := c.MustGet("userID")
 
-	user, err := u.userService.Me(email.(string))
+	user, err := u.userService.Me(userID.(int64))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]interface{}{
 			"msg": "invalid JSON request",

@@ -10,7 +10,7 @@ import (
 
 type PhotoService interface {
 	Create(req *dto.PhotoRequest, userID int64) (dto.PhotoResponse, error)
-	Update(photoID int64, req *dto.PhotoUpdateRequest) (dto.PhotoUpdateResponse, error)
+	Update(photoID int64, req *dto.PhotoUpdateRequest, userID int64) (dto.PhotoUpdateResponse, error)
 	Delete(photoID int64) error
 	FindOneByID(photoID int64) (dto.PhotoResponse, error)
 	FindAll() ([]dto.PhotoUserResponse, error)
@@ -60,7 +60,7 @@ func (s *photoService) Create(req *dto.PhotoRequest, userID int64) (dto.PhotoRes
 	return photoResponse, nil
 }
 
-func (s *photoService) Update(photoID int64, req *dto.PhotoUpdateRequest) (dto.PhotoUpdateResponse, error) {
+func (s *photoService) Update(photoID int64, req *dto.PhotoUpdateRequest, userID int64) (dto.PhotoUpdateResponse, error) {
 
 	var photoUpdate dto.PhotoUpdateResponse
 
@@ -73,6 +73,7 @@ func (s *photoService) Update(photoID int64, req *dto.PhotoUpdateRequest) (dto.P
 	entityPhoto.Title = req.Title
 	entityPhoto.Caption = req.Caption
 	entityPhoto.PhotoUrl = req.PhotoUrl
+	entityPhoto.UserID = userID
 
 	_, _, err = s.photoRepository.Update(photoID, entityPhoto)
 	if err != nil {
@@ -140,6 +141,7 @@ func (s *photoService) FindAll() ([]dto.PhotoUserResponse, error) {
 
 	photos, err := s.photoRepository.FindAll()
 	if err != nil {
+		log.Println("kesini ?")
 		log.Println(err)
 		return photoUserResponses, err
 	}

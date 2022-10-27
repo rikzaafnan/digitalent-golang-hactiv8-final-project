@@ -30,8 +30,8 @@ func (u socialMediaRestHandler) Create(c *gin.Context) {
 		})
 		return
 	}
-
-	user, err := u.socialMediaService.Create(&req)
+	userID := c.MustGet("userID")
+	user, err := u.socialMediaService.Create(&req, userID.(int64))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]interface{}{
 			"msg": "invalid JSON request",
@@ -64,8 +64,8 @@ func (u socialMediaRestHandler) Update(c *gin.Context) {
 		})
 		return
 	}
-
-	socialMedia, err := u.socialMediaService.Update(int64(socialMediaId), &req)
+	userID := c.MustGet("userID")
+	socialMedia, err := u.socialMediaService.Update(int64(socialMediaId), &req, userID.(int64))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]interface{}{
 			"msg": "invalid JSON request",
@@ -134,6 +134,13 @@ func (u socialMediaRestHandler) FindAll(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, map[string]interface{}{
 			"msg": err.Error(),
 			"err": "BAD_REQUEST",
+		})
+		return
+	}
+
+	if len(socialMedias) <= 0 {
+		c.JSON(http.StatusOK, map[string]interface{}{
+			"data": "tidak ada data",
 		})
 		return
 	}

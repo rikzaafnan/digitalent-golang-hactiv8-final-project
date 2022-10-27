@@ -13,7 +13,7 @@ type UserService interface {
 	Login(req *dto.UserLogin) (dto.UserLoginResponse, error)
 	Update(userID int64, req dto.UserUpdate) (dto.UserUpdateResponse, error)
 	Delete(userID int64) error
-	Me(email string) (dto.UserResponse, error)
+	Me(userID int64) (dto.UserResponse, error)
 }
 
 type userService struct {
@@ -191,12 +191,12 @@ func (s *userService) Delete(userID int64) error {
 	return nil
 
 }
-func (s *userService) Me(email string) (dto.UserResponse, error) {
+func (s *userService) Me(userID int64) (dto.UserResponse, error) {
 
 	var user dto.UserResponse
 
 	// check email
-	userEntity, err := s.userRepository.FindByEmail(email)
+	userEntity, err := s.userRepository.FindByID(userID)
 	if err != nil {
 
 		log.Println(err)

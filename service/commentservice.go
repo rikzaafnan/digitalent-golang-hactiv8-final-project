@@ -8,8 +8,8 @@ import (
 )
 
 type CommentService interface {
-	Create(req *dto.CommentRequest) (dto.CommentResponse, error)
-	Update(commentID int64, req *dto.CommentUpdateRequest) (dto.CommentUpdateResponse, error)
+	Create(req *dto.CommentRequest, userID int64) (dto.CommentResponse, error)
+	Update(commentID int64, req *dto.CommentUpdateRequest, userID int64) (dto.CommentUpdateResponse, error)
 	Delete(commentID int64) error
 	FindOneByID(commentID int64) (dto.CommentResponse, error)
 	FindAll() ([]dto.CommentUserPhotoResponse, error)
@@ -25,13 +25,14 @@ func NewCommentService(commentRepository commentrepository.CommentRepository) *c
 	}
 }
 
-func (s *commentService) Create(req *dto.CommentRequest) (dto.CommentResponse, error) {
+func (s *commentService) Create(req *dto.CommentRequest, userID int64) (dto.CommentResponse, error) {
 
 	var commentResponse dto.CommentResponse
 
 	var entityComment entity.Comment
 	entityComment.Message = req.Message
 	entityComment.PhotoID = req.PhotoID
+	entityComment.UserID = userID
 
 	_, lastInsertId, err := s.commentRepository.Insert(entityComment)
 	if err != nil {
@@ -55,7 +56,7 @@ func (s *commentService) Create(req *dto.CommentRequest) (dto.CommentResponse, e
 	return commentResponse, nil
 }
 
-func (s *commentService) Update(commentID int64, req *dto.CommentUpdateRequest) (dto.CommentUpdateResponse, error) {
+func (s *commentService) Update(commentID int64, req *dto.CommentUpdateRequest, userID int64) (dto.CommentUpdateResponse, error) {
 
 	var commentUpdate dto.CommentUpdateResponse
 
@@ -65,7 +66,8 @@ func (s *commentService) Update(commentID int64, req *dto.CommentUpdateRequest) 
 		return commentUpdate, err
 	}
 	var entityComment entity.Comment
-	entityComment.Message = entityComment.Message
+	entityComment.Message = req.Message
+	entityComment.UserID = userID
 
 	_, _, err = s.commentRepository.Update(comment.ID, entityComment)
 	if err != nil {
